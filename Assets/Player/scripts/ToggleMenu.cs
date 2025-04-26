@@ -6,7 +6,7 @@ public class ToggleMenu : MonoBehaviour
     public GameObject menuCanvas;  // The menu Canvas you want to toggle
     public string toggleGesture = "Pinch";  // Use this gesture to toggle (or any other gesture)
 
-    private VG_Hand leftHand, rightHand;
+    public VG_Hand leftHand, rightHand;
 
     void Start()
     {
