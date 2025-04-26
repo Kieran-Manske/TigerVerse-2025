@@ -1,67 +1,77 @@
 using UnityEngine;
 
-public class InteractWithObject : MonoBehaviour
+public class InteractWithObjects : MonoBehaviour
 {
-    public GameObject hand;  // Reference to the hand from the Gleechi hand rig
-    public GameObject interactableObject;  // The object to interact with
-    private bool isInteracting = false;
-    private GameObject grabbedObject;
+    public Transform leftHand;            // Reference to the left hand transform
+    public Transform rightHand;           // Reference to the right hand transform
+    public float interactionDistance = 3f; // Distance at which objects can be interacted with
+    public LayerMask interactableLayer;   // The layer for interactable objects
 
-    void Update()
+    private GameObject leftHandObject = null;  // The object being held by the left hand
+    private GameObject rightHandObject = null; // The object being held by the right hand
+
+    private void Update()
     {
-        // Detect gestures or inputs from the Gleechi hand rig
-        if (IsHandGrabbing(hand) && !isInteracting)
+        // Check for interaction with the left hand
+        if (leftHandObject == null)
         {
-            AttemptGrabObject();  // Try to grab object with hand gesture
+            TryGrabObject(leftHand);
+        }
+        else
+        {
+            TryReleaseObject(leftHand, leftHandObject);
         }
 
-        if (isInteracting && IsHandReleased(hand))
+        // Check for interaction with the right hand
+        if (rightHandObject == null)
         {
-            ReleaseObject();  // Release the object when hand is not grabbing anymore
+            TryGrabObject(rightHand);
+        }
+        else
+        {
+            TryReleaseObject(rightHand, rightHandObject);
         }
     }
 
-    // This would be a method tied to the hand tracking system, checking if the hand is grabbing
-    bool IsHandGrabbing(GameObject hand)
-    {
-        // Use the Gleechi hand tracking system to detect if the hand is performing a grab gesture
-        return hand.GetComponent<GleechiHandGesture>().isGrabbing;  // Example method
-    }
-
-    // Check if the hand has released the object
-    bool IsHandReleased(GameObject hand)
-    {
-        // Replace with your actual check for when the hand is no longer grabbing
-        return !hand.GetComponent<GleechiHandGesture>().isGrabbing;  // Example method
-    }
-
-    // Attempt to grab the object when the hand gesture is a grab
-    void AttemptGrabObject()
+    private void TryGrabObject(Transform hand)
     {
         RaycastHit hit;
-
-        // Perform a raycast from the hand to find interactable objects
-        if (Physics.Raycast(hand.transform.position, hand.transform.forward, out hit))
+        // Perform a raycast from the hand to detect interactable objects
+        if (Physics.Raycast(hand.position, hand.forward, out hit, interactionDistance, interactableLayer))
         {
-            if (hit.collider.CompareTag("Interactable"))  // Check if it’s an interactable object
+            if (hit.collider.CompareTag("Interactable"))
             {
-                grabbedObject = hit.collider.gameObject;  // Grab the object
-                grabbedObject.transform.SetParent(hand.transform);  // Attach the object to the hand
-                grabbedObject.GetComponent<Rigidbody>().isKinematic = true;  // Disable physics
-                isInteracting = true;  // Set interaction flag
+                // Grab the object if it's interactable
+                GameObject objectToGrab = hit.collider.gameObject;
+                objectToGrab.transform.SetParent(hand); // Attach to hand
+                objectToGrab.GetComponent<Rigidbody>().isKinematic = true; // Disable physics
+                if (hand == leftHand)
+                {
+                    leftHandObject = objectToGrab;
+                }
+                else
+                {
+                    rightHandObject = objectToGrab;
+                }
             }
         }
     }
 
-    // Release the object from the hand
-    void ReleaseObject()
+    private void TryReleaseObject(Transform hand, GameObject objectToRelease)
     {
-        if (grabbedObject != null)
+        // Check if the user has released the grip or button for releasing the object
+        if (Input.GetButtonDown(hand == leftHand ? "Fire1" : "Fire2")) // Replace with your own button mappings
         {
-            grabbedObject.transform.SetParent(null);  // Detach the object from the hand
-            grabbedObject.GetComponent<Rigidbody>().isKinematic = false;  // Re-enable physics
-            grabbedObject = null;  // Reset grabbed object
-            isInteracting = false;  // Reset interaction flag
+            objectToRelease.transform.SetParent(null); // Detach from hand
+            objectToRelease.GetComponent<Rigidbody>().isKinematic = false; // Re-enable physics
+            if (hand == leftHand)
+            {
+                leftHandObject = null;
+            }
+            else
+            {
+                rightHandObject = null;
+            }
         }
     }
 }

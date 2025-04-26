@@ -1,38 +1,42 @@
 using UnityEngine;
-using VirtualGrasp;  // Gleechi SDK namespace for hand tracking
 
 public class ToggleMenu : MonoBehaviour
 {
-    public GameObject menuCanvas;  // The menu Canvas you want to toggle
-    public string toggleGesture = "Pinch";  // Use this gesture to toggle (or any other gesture)
+    public GameObject menu;  // The menu UI element to toggle
+    public Transform leftHand; // Left hand transform
+    public Transform rightHand; // Right hand transform
+    public float interactionDistance = 3f; // Distance from hand to interact with the menu
+    public LayerMask interactableLayer; // Layer for interactable objects
 
-    public VG_Hand leftHand, rightHand;
-
-    void Start()
-    {
-        // Get the left and right hand objects from Gleechi's avatar system
-        leftHand = VG_Avatar.Instance.leftHand;
-        rightHand = VG_Avatar.Instance.rightHand;
-    }
+    private bool menuActive = false; // Track if the menu is currently active
 
     void Update()
     {
-        // Check for pinch gesture on either hand
-        if (IsPinching(leftHand) || IsPinching(rightHand))
+        // Check for interaction with left and right hand controllers
+        if (Input.GetButtonDown("Fire1")) // Left hand input (change to your input mapping)
         {
-            ToggleVisibility();
+            ToggleMenuVisibility(leftHand);
+        }
+
+        if (Input.GetButtonDown("Fire2")) // Right hand input (change to your input mapping)
+        {
+            ToggleMenuVisibility(rightHand);
         }
     }
 
-    // Check if the hand is performing a pinch gesture
-    bool IsPinching(VG_Hand hand)
+    void ToggleMenuVisibility(Transform hand)
     {
-        return hand.isPinching;  // Gleechi provides this method for pinch detection
-    }
-
-    void ToggleVisibility()
-    {
-        // Toggle the menu visibility
-        menuCanvas.SetActive(!menuCanvas.activeSelf);
+        RaycastHit hit;
+        // Perform a raycast from the hand to check if it's pointing at the menu
+        if (Physics.Raycast(hand.position, hand.forward, out hit, interactionDistance, interactableLayer))
+        {
+            if (hit.collider.CompareTag("MenuButton"))
+            {
+                // If raycast hits an interactable object (like a button), toggle the menu
+                menuActive = !menuActive;
+                menu.SetActive(menuActive);  // Show or hide the menu
+            }
+        }
     }
 }
+
