@@ -24,6 +24,7 @@ MemoryCaptures/
 *.pidb
 *.booproj
 *.svd
+UserSettings/
 
 # ========== #
 # OS Specific #
