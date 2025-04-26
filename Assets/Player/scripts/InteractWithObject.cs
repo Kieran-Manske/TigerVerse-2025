@@ -1,51 +1,67 @@
 using UnityEngine;
-using VirtualGrasp;  // Gleechi namespace for hand interaction
 
 public class InteractWithObject : MonoBehaviour
 {
-    public VG_Hand hand;  // Assign the hand you're tracking (left or right)
+    public GameObject hand;  // Reference to the hand from the Gleechi hand rig
+    public GameObject interactableObject;  // The object to interact with
+    private bool isInteracting = false;
     private GameObject grabbedObject;
-    private bool isGrabbing = false;
 
     void Update()
     {
-        // Check if the hand is grabbing something
-        if (hand.isGrabbing && !isGrabbing)
+        // Detect gestures or inputs from the Gleechi hand rig
+        if (IsHandGrabbing(hand) && !isInteracting)
         {
-            TryGrabObject();
+            AttemptGrabObject();  // Try to grab object with hand gesture
         }
-        else if (!hand.isGrabbing && isGrabbing)
+
+        if (isInteracting && IsHandReleased(hand))
         {
-            ReleaseObject();
+            ReleaseObject();  // Release the object when hand is not grabbing anymore
         }
     }
 
-    // Try to grab the object
-    void TryGrabObject()
+    // This would be a method tied to the hand tracking system, checking if the hand is grabbing
+    bool IsHandGrabbing(GameObject hand)
+    {
+        // Use the Gleechi hand tracking system to detect if the hand is performing a grab gesture
+        return hand.GetComponent<GleechiHandGesture>().isGrabbing;  // Example method
+    }
+
+    // Check if the hand has released the object
+    bool IsHandReleased(GameObject hand)
+    {
+        // Replace with your actual check for when the hand is no longer grabbing
+        return !hand.GetComponent<GleechiHandGesture>().isGrabbing;  // Example method
+    }
+
+    // Attempt to grab the object when the hand gesture is a grab
+    void AttemptGrabObject()
     {
         RaycastHit hit;
-        // Cast a ray from the hand to find an interactable object
+
+        // Perform a raycast from the hand to find interactable objects
         if (Physics.Raycast(hand.transform.position, hand.transform.forward, out hit))
         {
-            if (hit.collider.CompareTag("Interactable"))  // Ensure it's an interactable object
+            if (hit.collider.CompareTag("Interactable"))  // Check if it’s an interactable object
             {
-                grabbedObject = hit.collider.gameObject;
-                grabbedObject.transform.SetParent(hand.transform);  // Attach object to hand
-                grabbedObject.GetComponent<Rigidbody>().isKinematic = true;  // Disable physics while holding
-                isGrabbing = true;
+                grabbedObject = hit.collider.gameObject;  // Grab the object
+                grabbedObject.transform.SetParent(hand.transform);  // Attach the object to the hand
+                grabbedObject.GetComponent<Rigidbody>().isKinematic = true;  // Disable physics
+                isInteracting = true;  // Set interaction flag
             }
         }
     }
 
-    // Release the object when the hand stops grabbing
+    // Release the object from the hand
     void ReleaseObject()
     {
         if (grabbedObject != null)
         {
-            grabbedObject.transform.SetParent(null);  // Detach object from hand
-            grabbedObject.GetComponent<Rigidbody>().isKinematic = false;  // Enable physics again
-            grabbedObject = null;
-            isGrabbing = false;
+            grabbedObject.transform.SetParent(null);  // Detach the object from the hand
+            grabbedObject.GetComponent<Rigidbody>().isKinematic = false;  // Re-enable physics
+            grabbedObject = null;  // Reset grabbed object
+            isInteracting = false;  // Reset interaction flag
         }
     }
 }
