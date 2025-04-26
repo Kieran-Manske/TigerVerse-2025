@@ -33,13 +33,13 @@ namespace VirtualGrasp.Onboarding
 #endif
                 (ownRB != null || ownAB != null))
             { // sometimes we're not lucky, have to calculate
-                Vector3 ownSpeed = ownRB != null ? ownRB.velocity : ownAB.velocity;
+                Vector3 ownSpeed = ownRB != null ? ownRB.linearVelocity : ownAB.linearVelocity;
                 Vector3 colliderSpeed = Vector3.zero;
 #if UNITY_2020_3_16_OR_NEWER
             if (collision.rigidbody != null) colliderSpeed = collision.rigidbody.velocity;
             else if (collision.articulationBody != null) colliderSpeed = collision.articulationBody.velocity;
 #else
-                if (collision.rigidbody != null) colliderSpeed = collision.rigidbody.velocity;
+                if (collision.rigidbody != null) colliderSpeed = collision.rigidbody.linearVelocity;
 #endif
 
                 if ((ownSpeed - colliderSpeed).magnitude > calculatedVelocityThreshold)
