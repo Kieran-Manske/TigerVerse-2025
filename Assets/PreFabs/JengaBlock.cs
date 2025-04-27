@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScaleModifier : MonoBehaviour
+public class ScaleController : MonoBehaviour
 {
-    public float scaleModifier = 1.5f;
+    public float scaleFactor = 1.0f;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,6 +14,6 @@ public class ScaleModifier : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

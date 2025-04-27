@@ -12,17 +12,18 @@ public class TowerBuilder : MonoBehaviour
     [SerializeField] private int _towerHeight = 18;
     public Vector3 blockScale = Vector3.one;
     public float ySize = 1.5f;
-    public float xSize = 2.5f;
+    public float xSize = 2.3f;
     public float zSize = 7.5f;
-    
+    public ScaleController scaleController;
+
     public GameObject blockPrefab;
 
     void Start()
     {
-        CreateTower();
+        StartCoroutine(CreateTower());
     }
 
-    void CreateTower() {
+    IEnumerator CreateTower() {
         foreach (Transform child in transform)
         {
             Destroy(child.gameObject);
@@ -33,6 +34,7 @@ public class TowerBuilder : MonoBehaviour
             } else {
                 LayerX(i);
             }
+            yield return new WaitForSeconds(0.1f);
         }
     }
     void LayerZ(int offset) {
@@ -59,6 +61,14 @@ public class TowerBuilder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (scaleController != null){
+            transform.localScale = Vector3.one * scaleController.scaleFactor;
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.mass = scaleController.scaleFactor; 
+            }
+
+        }
     }
-}
+ }
