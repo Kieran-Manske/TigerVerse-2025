@@ -1,28 +1,19 @@
+using System.Collections.Specialized;
 using UnityEngine;
-public class Fallen : MonoBehaviour
-{
-  public Vector3 movementTo = new Vector3(-200,0, 0);
+public class Fallen : MonoBehaviour{
 
-  public GameObject Tower;
-  public string targetTag = "Target";
-    void Start()
+    public string targetTag = "Target";
+    public string baseTag = "Base";
+    public string Brick = "Brick";
+    
+    void OnCollisionEnter(Collision collision)
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-        void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag(targetTag))
-        {
-            transform.Translate(movementTo);
-            GameObject newTower = GameObject.Instantiate(Tower);
-            newTower.transform.Translate(movementTo);
+        if (collision.gameObject.CompareTag(Brick)){
+            GameObject[] objectsToDestroy = GameObject.FindGameObjectsWithTag(Brick);
+            foreach (GameObject obj in objectsToDestroy)
+            {
+                Destroy(obj);
+            }
         }
-
     }
 }

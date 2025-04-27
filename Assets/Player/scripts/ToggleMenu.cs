@@ -1,12 +1,13 @@
+/*
 using UnityEngine;
-using VirtualGrasp;  // Gleechi SDK namespace for hand tracking
+using virtualGrasp;  // Adjust if needed// Gleechi SDK namespace for hand tracking
 
 public class ToggleMenu : MonoBehaviour
 {
     public GameObject menuCanvas;  // The menu Canvas you want to toggle
     public string toggleGesture = "Pinch";  // Use this gesture to toggle (or any other gesture)
 
-    private VG_Hand leftHand, rightHand;
+    public VG_Hand leftHand, rightHand;
 
     void Start()
     {
@@ -36,3 +37,4 @@ public class ToggleMenu : MonoBehaviour
         menuCanvas.SetActive(!menuCanvas.activeSelf);
     }
 }
+*/
