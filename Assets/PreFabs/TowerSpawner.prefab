@@ -49,4 +49,4 @@ MonoBehaviour:
   ySize: 1.5
   xSize: 2.5
   zSize: 7.5
-  blockPrefab: {fileID: 8465291721459769334, guid: f0b9860a46a65714faaf504c961cd8d5, type: 3}
+  blockPrefab: {fileID: 6628355465265985179, guid: f0b9860a46a65714faaf504c961cd8d5, type: 3}
