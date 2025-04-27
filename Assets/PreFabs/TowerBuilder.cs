@@ -28,13 +28,26 @@ public class TowerBuilder : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+        if (scaleController != null)
+        {
+            transform.localScale = Vector3.one * scaleController.scaleFactor;
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.mass = scaleController.scaleFactor;
+            }
+
+        }
+        ySize *= scaleController.scaleFactor;
+        xSize *= scaleController.scaleFactor;
+        zSize *= scaleController.scaleFactor;
         for (int i = 0; i < _towerHeight; i++) {
             if (i%2 == 0) {
                 LayerZ(i);
             } else {
                 LayerX(i);
             }
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.15f);
         }
     }
     void LayerZ(int offset) {
