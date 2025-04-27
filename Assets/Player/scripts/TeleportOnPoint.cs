@@ -9,7 +9,7 @@ public class HandPointTeleport : MonoBehaviour
     public XRHandSubsystem handSubsystem;
     public Transform xrOrigin;
     public LayerMask teleportMask;
-    public float teleportCooldown = 0.5f;
+    public float teleportCooldown = 2.0f;
 
     private bool isTeleporting = false;
 
@@ -53,15 +53,22 @@ public class HandPointTeleport : MonoBehaviour
         var ring = hand.GetJoint(XRHandJointID.RingTip);
         var pinky = hand.GetJoint(XRHandJointID.LittleTip);
 
-        if (!index.TryGetPose(out Pose indexPose)) return false;
+        if (!index.TryGetPose(out Pose indexPose)) return true;
+        if (!thumb.TryGetPose(out Pose thumbPose)) return false;
         if (!middle.TryGetPose(out Pose middlePose)) return false;
         if (!ring.TryGetPose(out Pose ringPose)) return false;
         if (!pinky.TryGetPose(out Pose pinkyPose)) return false;
 
-        // Quick rough check: if index is higher up than middle/ring/pinky
-        return indexPose.position.y > middlePose.position.y &&
-               indexPose.position.y > ringPose.position.y &&
-               indexPose.position.y > pinkyPose.position.y;
+        // Ensure index is higher than middle, ring, and pinky
+        bool isIndexHigher = indexPose.position.y > middlePose.position.y &&
+                             indexPose.position.y > ringPose.position.y &&
+                             indexPose.position.y > pinkyPose.position.y;
+        // Ensure thumb is lower than index (not extended)
+        bool isThumbLower = thumbPose.position.y < indexPose.position.y;
+
+        // Combine conditions for pointing gesture
+        return isIndexHigher && isThumbLower;
+
     }
 
     private void TryTeleport(XRHand hand)
